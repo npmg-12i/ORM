@@ -21,7 +21,7 @@ import javax.swing.event.ListSelectionListener;
 public class TestAccess {
 
 	public static void main(String[] args) {
-		
+		//test
 		/*DBAccessQueryProvider provider = 
 				new DBAccessQueryProvider("C:\\Users\\Toncata\\Downloads\\HospitalDB_12i_14.mdb");
 		ResultSet result = provider.selectQuery("SELECT Doctors.ID AS ID, FirstName, LastName, HeadOfDepartment, Name "
