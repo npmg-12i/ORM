@@ -15,6 +15,15 @@ public class TableCreateTest {
 		DBAccessQueryProvider queryProvider = 
 				new DBAccessQueryProvider(".\\DB\\emptyDataBase.mdb"
 				, new AccessSqlTypeProvider());
+		/*
+		try {
+			queryProvider.deleteTable(Doctor.class);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
 		Doctor doctor = new Doctor(30, "Georgi", "Petrov", true, 4);
 		
 		try {

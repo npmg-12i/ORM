@@ -1,31 +1,33 @@
 package edu.npmg.accessdb.models;
 
+import edu.npmg.accessdb.annotations.Autoincrement;
+import edu.npmg.accessdb.annotations.PrimaryKey;
+import edu.npmg.accessdb.annotations.DBType;
+
 public class Doctor {
 	
 	@PrimaryKey
 	@Autoincrement
-	@Integer
+	@DBType(type = int.class)
 	private int ID;
 	
-	@String
+	@DBType(type = String.class)
 	private String firstName;
 	
+	@DBType(type = String.class)
 	private String lastName;
 	
+	@DBType(type = boolean.class)
 	private boolean headOfDepartment;
 	
-	@ForeignKey
+	//@ForeignKey
+	@DBType(type = int.class)
 	private int specialty_ID;
 	
 	public Doctor(String firstName, String lastName, boolean headOfDepartment,
 			int specialty)
 	{
 		this(0, firstName, lastName, headOfDepartment, specialty);
-	}
-	
-	private Doctor()
-	{
-		this(0, "", "", true, 0);
 	}
 	
 	public Doctor(int id, String firstName, String lastName, boolean headOfDepartment,

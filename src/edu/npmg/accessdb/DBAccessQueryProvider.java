@@ -1,5 +1,6 @@
 package edu.npmg.accessdb;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.npmg.accessdb.annotations.Autoincrement;
+import edu.npmg.accessdb.annotations.DBType;
+import edu.npmg.accessdb.annotations.PrimaryKey;
 
 public class DBAccessQueryProvider {
 	
@@ -228,35 +233,39 @@ public class DBAccessQueryProvider {
 		}
 	}
 	
+	public void deleteTable(Class<?> objectClass) throws SQLException
+	{
+		String tableName = objectClass.getSimpleName() + "s";
+		String query = "DROP TABLE "+tableName;
+		PreparedStatement statement = connection.prepareStatement(query);
+		statement.execute();
+	}
+	
 	public void createTable(Class<?> objectClass) throws SQLException, IllegalArgumentException, IllegalAccessException
 	{
 		String tableName = objectClass.getSimpleName() + "s";
 		Field[]  fields = objectClass.getDeclaredFields();
 		
 		String query = "CREATE TABLE " + tableName + " (";
-		
-		
-		Object o = null;
-		try {
-			Constructor<?> c =  objectClass.getDeclaredConstructor();
-			c.setAccessible(true);
-			o = c.newInstance();
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 		for(int i = 0; i < fields.length; i++)
 		{
 			fields[i].setAccessible(true);
 			String columnName = Character.toUpperCase(fields[i].getName().charAt(0)) + fields[i].getName().substring(1);
 			
-			Object oo = fields[i].get(o);
-			String columnType = sqlTypeProvider.getSqlType(fields[i].get(o).getClass().getSimpleName());
-//			String columnType = sqlTypeProvider.getSqlType(fields[i].getAnnotatedType().toString());
-//			if(columnName.equals("Id"))
-//			{
-//				columnType = "AUTOINCREMENT PRIMARY KEY";
-//			}
+			PrimaryKey pk = fields[i].getDeclaredAnnotation(PrimaryKey.class);
+			Autoincrement auto = fields[i].getDeclaredAnnotation(Autoincrement.class);
+			DBType type = fields[i].getDeclaredAnnotation(DBType.class);
+			
+			String columnType = sqlTypeProvider.getSqlType(type.type().getSimpleName());
+			if(auto != null)
+			{
+				columnType = "AUTOINCREMENT";
+			}
+			if(pk != null)
+			{
+				columnType += " PRIMARY KEY";
+			}
 			query += columnName + " ";
 			query += columnType;
 			if(i<fields.length-1)
