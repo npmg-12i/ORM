@@ -7,7 +7,7 @@ import edu.npmg.accessdb.annotations.ForeignKey;
 import edu.npmg.accessdb.annotations.NotNull;
 
 public class Doctor {
-	
+	//test ssh
 	@PrimaryKey
 	@Autoincrement
 	@DBType(type = int.class)
