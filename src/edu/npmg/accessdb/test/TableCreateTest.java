@@ -1,38 +1,50 @@
 package edu.npmg.accessdb.test;
 
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import edu.npmg.accessdb.AccessSqlTypeProvider;
 import edu.npmg.accessdb.DBAccessQueryProvider;
 import edu.npmg.accessdb.models.Doctor;
+
 import edu.npmg.accessdb.models.Specialty;
 
 public class TableCreateTest {
 
 	public static void main(String[] args) 
 	{
-		
-		
 		DBAccessQueryProvider queryProvider = 
-				new DBAccessQueryProvider(".\\DB\\emptyDataBase.mdb"
+				new DBAccessQueryProvider("C:\\Users\\Admin\\Downloads\\emptyDataBase.mdb"
 				, new AccessSqlTypeProvider());
-		/*
-		try {
-			queryProvider.deleteTable(Doctor.class);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		 */
 		
-		/*
+		/*try {
+			queryProvider.deleteTable(Doctor.class);
+			queryProvider.deleteTable(Specialty.class);
+		} catch (SQLException e1) {
+			 //TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+		
+		try {
+			queryProvider.createTable(Specialty.class);
+			Specialty s = new Specialty(1,"Surgeon");
+			
+			queryProvider.insertData(s);
+			
+			
+		} catch (IllegalArgumentException | IllegalAccessException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Doctor doctor = new Doctor(30, "Georgi", "Petrov", true, 4);
+		Doctor doctor1 = new Doctor(13, "Petar" ,"Georgiev",true,1 );
 		
 		try {
 			queryProvider.createTable(doctor.getClass());
+			queryProvider.insertData(doctor1);
+			
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,29 +55,15 @@ public class TableCreateTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
 		
-		
-		Specialty firstSpecialty = new Specialty(1, "surgeon4");
-		
-		try 
-		{
-			//queryProvider.deleteTable(Specialty.class);
-			//queryProvider.createTable(Specialty.class);
-			queryProvider.saveData(firstSpecialty);
-		} 
-		catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | SQLException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			
 		
 		
 		
 		
 		
 		
-		ResultSet result = queryProvider.selectQuery("SELECT * FROM Doctors");
+		//ResultSet result = queryProvider.selectQuery("SELECT * FROM Doctors");
 		
 		//Field[] fields = Doctor.class.getDeclaredFields();
 		
@@ -110,5 +108,6 @@ public class TableCreateTest {
 //		}
 		
 	}
-}
+
+	}
 

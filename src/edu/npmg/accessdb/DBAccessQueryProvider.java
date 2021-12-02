@@ -14,6 +14,8 @@ import java.util.List;
 
 import edu.npmg.accessdb.annotations.Autoincrement;
 import edu.npmg.accessdb.annotations.DBType;
+import edu.npmg.accessdb.annotations.ForeignKey;
+import edu.npmg.accessdb.annotations.NotNull;
 import edu.npmg.accessdb.annotations.PrimaryKey;
 
 public class DBAccessQueryProvider {
@@ -277,6 +279,15 @@ public class DBAccessQueryProvider {
 			}
 			query += columnName + " ";
 			query += columnType;
+			if(fields[i].getDeclaredAnnotation(NotNull.class)!=null) {
+				query += " NOT NULL ";
+			}
+			if(fields[i].getDeclaredAnnotation(ForeignKey.class)!=null) {
+				//CustomerID INTEGER NOT NULL CONSTRAINT FK_CustomerID REFERENCES tblCustomers (CustomerID)
+				ForeignKey fk = fields[i].getDeclaredAnnotation(ForeignKey.class);
+				query += "CONSTRAINT FK_" + fk.fieldName() + " REFERENCES " + fk.tableName() 
+				+ "("+fk.fieldName()+")";  
+			}
 			if(i<fields.length-1)
 			{
 				query += ", ";

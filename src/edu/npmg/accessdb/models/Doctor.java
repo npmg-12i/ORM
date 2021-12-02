@@ -3,25 +3,31 @@ package edu.npmg.accessdb.models;
 import edu.npmg.accessdb.annotations.Autoincrement;
 import edu.npmg.accessdb.annotations.PrimaryKey;
 import edu.npmg.accessdb.annotations.DBType;
+import edu.npmg.accessdb.annotations.ForeignKey;
+import edu.npmg.accessdb.annotations.NotNull;
 
 public class Doctor {
 	
 	@PrimaryKey
 	@Autoincrement
 	@DBType(type = int.class)
+	@NotNull
 	private int ID;
 	
 	@DBType(type = String.class)
+	@NotNull
 	private String firstName;
 	
 	@DBType(type = String.class)
+	@NotNull
 	private String lastName;
 	
 	@DBType(type = boolean.class)
 	private boolean headOfDepartment;
 	
-	//@ForeignKey
+	//@ForeignKey(tableName = "Specialtys", fieldName = "ID")
 	@DBType(type = int.class)
+	@NotNull
 	private int specialty_ID;
 	
 	public Doctor(String firstName, String lastName, boolean headOfDepartment,
