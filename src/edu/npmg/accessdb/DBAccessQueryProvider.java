@@ -82,18 +82,21 @@ public class DBAccessQueryProvider {
 	
 	public void insertData(Object o) throws IllegalArgumentException, IllegalAccessException
 	{
-		String tableName = o.getClass().getSimpleName()+"s";
+		String tableName = o.getClass().getSimpleName() + "s";
 		Class<?> c = o.getClass();
 		Field[] fields = c.getDeclaredFields();
 		List<String> fieldValues = new ArrayList<>();
 		
-		String query = "INSERT INTO "+tableName+" (";
-		for(int i = 0; i<fields.length; i++)
+		String query = "INSERT INTO " + tableName + " (";
+		for (int i = 0; i < fields.length; i++)
 		{
 			fields[i].setAccessible(true);
 			String originalName = fields[i].getName();
-			if(originalName.equals("ID"))
+			
+			PrimaryKey key = fields[i].getDeclaredAnnotation(PrimaryKey.class);
+			if(key != null)
 				continue;
+			
 			String dbName = Character.toUpperCase(originalName.charAt(0))+
 					originalName.substring(1);
 			query += dbName;
@@ -107,7 +110,8 @@ public class DBAccessQueryProvider {
 			else
 				fieldValues.add(fields[i].get(o).toString());
 		}
-		for(int i = 1; i<fields.length; i++)
+		
+		for (int i = 1; i<fields.length; i++)
 		{
 			query += "?";
 			if(i<fields.length-1)	
@@ -132,25 +136,24 @@ public class DBAccessQueryProvider {
 	
 	public void updateData(Object o) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
 	{
-		String tableName = o.getClass().getSimpleName()+"s";
+		String tableName = o.getClass().getSimpleName() + "s";
 		Class<?> c = o.getClass();
-		Field idField = c.getDeclaredField("ID");
-		idField.setAccessible(true);
-		int id = idField.getInt(o);
 		
 		String query = "UPDATE "+tableName+" SET ";
 		
 		Field[] fields = c.getDeclaredFields();
-		
+		String id = null;
 		List<String> fieldValues = new ArrayList<>();
 		
 		for(int i = 0; i < fields.length; i++)
-		{
-			if(fields[i].equals(idField))
+		{	
+			fields[i].setAccessible(true);
+
+			if(fields[i].getDeclaredAnnotation(PrimaryKey.class) != null)
 			{
+				id = fields[i].get(o).toString();
 				continue;
 			}
-			fields[i].setAccessible(true);
 			
 			if(fields[i].get(o) != null)
 				fieldValues.add(fields[i].get(o).toString());
@@ -169,6 +172,9 @@ public class DBAccessQueryProvider {
 		}
 		query += "WHERE ID = ?";
 		
+		if (id == null)
+			return;
+		
 		PreparedStatement statement;
 		try {
 			statement = connection.prepareStatement(query);
@@ -177,7 +183,7 @@ public class DBAccessQueryProvider {
 			{
 				statement.setString(i+1, fieldValues.get(i));
 			}
-			statement.setInt(i+1, id);
+			statement.setString(i+1, id);
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -188,17 +194,20 @@ public class DBAccessQueryProvider {
 	public void deleteData(Object o) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
 	{
 		String tableName = o.getClass().getSimpleName()+"s";
-		Class<?> c = o.getClass();
-		Field idField = c.getDeclaredField("ID");
-		idField.setAccessible(true);
-		int id = idField.getInt(o);
+
+		String id = getId(o);
 		
 		String query = "DELETE FROM "+tableName+" WHERE ID = ?";
+		
+		if (id == null)
+		{
+			return;
+		}
 		
 		PreparedStatement statement;
 		try {
 			statement = connection.prepareStatement(query);
-			statement.setInt(1, id);
+			statement.setString(1, id);
 			statement.executeUpdate();		
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -206,16 +215,16 @@ public class DBAccessQueryProvider {
 		}		
 	}
 	
-	public void saveObject(Object o) throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
+	public void saveData(Object o) throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
 	{
 		Class<?> objectClass = o.getClass();
 		String tableName = objectClass.getSimpleName() + "s";
-		Field idField = objectClass.getDeclaredField("id");
-		idField.setAccessible(true);
-		String objectId = idField.get(o).toString();
+		
+		String objectId = getId(0);
 		
 		String ResultQuery = "SELECT COUNT(ID) as Count FROM " + tableName + " WHERE ID = " + objectId;
 		PreparedStatement statement = connection.prepareStatement(ResultQuery);
+		
 		ResultSet resultSet = statement.executeQuery();
 		int count = 0;
 		while(resultSet.next())
@@ -282,5 +291,31 @@ public class DBAccessQueryProvider {
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.executeUpdate();
 		
+	}
+	
+	private String getId(Object o)
+	{
+		String id = null;
+		
+		Field[] fields = o.getClass().getDeclaredFields();
+		for (Field f : fields)
+		{
+			if (f.getDeclaredAnnotation(PrimaryKey.class) == null)
+				continue;
+			else
+			{
+				f.setAccessible(true);
+				try 
+				{
+					id = f.get(o).toString();
+				} 
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return id;
 	}
 }

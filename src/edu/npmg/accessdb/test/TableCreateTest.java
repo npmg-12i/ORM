@@ -1,17 +1,21 @@
 package edu.npmg.accessdb.test;
 
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import edu.npmg.accessdb.AccessSqlTypeProvider;
 import edu.npmg.accessdb.DBAccessQueryProvider;
 import edu.npmg.accessdb.models.Doctor;
+import edu.npmg.accessdb.models.Specialty;
 
 public class TableCreateTest {
 
 	public static void main(String[] args) 
 	{
+		
+		
 		DBAccessQueryProvider queryProvider = 
 				new DBAccessQueryProvider(".\\DB\\emptyDataBase.mdb"
 				, new AccessSqlTypeProvider());
@@ -22,8 +26,9 @@ public class TableCreateTest {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
+		 */
 		
+		/*
 		Doctor doctor = new Doctor(30, "Georgi", "Petrov", true, 4);
 		
 		try {
@@ -38,8 +43,22 @@ public class TableCreateTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		
+		Specialty firstSpecialty = new Specialty(1, "surgeon4");
+		
+		try 
+		{
+			//queryProvider.deleteTable(Specialty.class);
+			//queryProvider.createTable(Specialty.class);
+			queryProvider.saveData(firstSpecialty);
+		} 
+		catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		
@@ -91,6 +110,5 @@ public class TableCreateTest {
 //		}
 		
 	}
-
-	}
+}
 

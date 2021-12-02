@@ -3,14 +3,34 @@ package edu.npmg.accessdb.models;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class Patient {
+import edu.npmg.accessdb.annotations.Autoincrement;
+import edu.npmg.accessdb.annotations.DBType;
+import edu.npmg.accessdb.annotations.PrimaryKey;
+
+public class Patient 
+{
+	@PrimaryKey
+	@Autoincrement
+	@DBType(type = int.class)
 	private int ID;
+	
+	@DBType(type = String.class)
 	private String firstName;
+	
+	@DBType(type = String.class)
 	private String lastName;
+	
+	@DBType(type = String.class)
 	private String personalID;
+	
+	//to-do
 	private Date admitted;//LocalDateTime
 	private Date signedOut;
+	
+	@DBType(type = String.class)
 	private String diagnosis;
+	
+	//to-do
 	private int doctorID;
 	
 	public Patient(int iD, String firstName, String lastName, String personalID, Date admitted,
