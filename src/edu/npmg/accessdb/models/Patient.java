@@ -6,7 +6,9 @@ import java.time.LocalDate;
 import edu.npmg.accessdb.annotations.Autoincrement;
 import edu.npmg.accessdb.annotations.DBType;
 import edu.npmg.accessdb.annotations.PrimaryKey;
+import edu.npmg.accessdb.annotations.Table;
 
+@Table(tableName="Patients")
 public class Patient 
 {
 	@PrimaryKey

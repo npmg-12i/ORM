@@ -2,6 +2,7 @@ package edu.npmg.accessdb.models;
 
 import edu.npmg.accessdb.annotations.*;
 
+@Table(tableName="Specialties")
 public class Specialty 
 {
 	 @PrimaryKey

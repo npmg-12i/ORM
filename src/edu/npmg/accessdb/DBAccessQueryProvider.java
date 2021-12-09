@@ -17,6 +17,7 @@ import edu.npmg.accessdb.annotations.DBType;
 import edu.npmg.accessdb.annotations.ForeignKey;
 import edu.npmg.accessdb.annotations.NotNull;
 import edu.npmg.accessdb.annotations.PrimaryKey;
+import edu.npmg.accessdb.annotations.Table;
 
 public class DBAccessQueryProvider {
 	
@@ -49,6 +50,7 @@ public class DBAccessQueryProvider {
 	}
 	*/
 	
+	@Deprecated
 	public ResultSet selectQuery(String query, String... args)
 	{
 		PreparedStatement statement;
@@ -66,6 +68,7 @@ public class DBAccessQueryProvider {
 		return null;
 	}
 	
+	@Deprecated
 	public void tableChangeQuery(String query, String... args)
 	{
 		PreparedStatement statement;
@@ -84,8 +87,9 @@ public class DBAccessQueryProvider {
 	
 	public void insertData(Object o) throws IllegalArgumentException, IllegalAccessException
 	{
-		String tableName = o.getClass().getSimpleName() + "s";
 		Class<?> c = o.getClass();
+		String tableName = getTableName(c);
+		
 		Field[] fields = c.getDeclaredFields();
 		List<String> fieldValues = new ArrayList<>();
 		
@@ -138,8 +142,8 @@ public class DBAccessQueryProvider {
 	
 	public void updateData(Object o) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
 	{
-		String tableName = o.getClass().getSimpleName() + "s";
 		Class<?> c = o.getClass();
+		String tableName = getTableName(c);
 		
 		String query = "UPDATE "+tableName+" SET ";
 		
@@ -195,7 +199,8 @@ public class DBAccessQueryProvider {
 	
 	public void deleteData(Object o) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
 	{
-		String tableName = o.getClass().getSimpleName()+"s";
+		Class<?> objectClass = o.getClass();
+		String tableName = getTableName(objectClass);
 
 		String id = getId(o);
 		
@@ -220,7 +225,7 @@ public class DBAccessQueryProvider {
 	public void saveData(Object o) throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException
 	{
 		Class<?> objectClass = o.getClass();
-		String tableName = objectClass.getSimpleName() + "s";
+		String tableName = getTableName(objectClass);
 		
 		String objectId = getId(0);
 		
@@ -246,7 +251,8 @@ public class DBAccessQueryProvider {
 	
 	public void deleteTable(Class<?> objectClass) throws SQLException
 	{
-		String tableName = objectClass.getSimpleName() + "s";
+		String tableName = getTableName(objectClass);
+		
 		String query = "DROP TABLE "+tableName;
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.execute();
@@ -254,7 +260,8 @@ public class DBAccessQueryProvider {
 	
 	public void createTable(Class<?> objectClass) throws SQLException, IllegalArgumentException, IllegalAccessException
 	{
-		String tableName = objectClass.getSimpleName() + "s";
+		String tableName = getTableName(objectClass);
+	
 		Field[]  fields = objectClass.getDeclaredFields();
 		
 		String query = "CREATE TABLE " + tableName + " (";
@@ -302,6 +309,17 @@ public class DBAccessQueryProvider {
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.executeUpdate();
 		
+	}
+	
+	private String getTableName(Class<?> objectClass)
+	{
+		String tableName = objectClass.getSimpleName() + "s";
+		Table table = objectClass.getAnnotation(Table.class);
+		if(table != null)
+		{
+			tableName = table.tableName();
+		}
+		return tableName;
 	}
 	
 	private String getId(Object o)

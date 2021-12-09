@@ -2,10 +2,12 @@ package edu.npmg.accessdb.models;
 
 import edu.npmg.accessdb.annotations.Autoincrement;
 import edu.npmg.accessdb.annotations.PrimaryKey;
+import edu.npmg.accessdb.annotations.Table;
 import edu.npmg.accessdb.annotations.DBType;
 import edu.npmg.accessdb.annotations.ForeignKey;
 import edu.npmg.accessdb.annotations.NotNull;
 
+@Table(tableName="Doctors")
 public class Doctor {
 	//test ssh
 	@PrimaryKey
